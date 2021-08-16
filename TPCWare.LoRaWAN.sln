@@ -5,6 +5,12 @@ VisualStudioVersion = 16.0.31605.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPCWare.LoRaWAN", "TPCWare.LoRaWAN\TPCWare.LoRaWAN.csproj", "{26354F30-C9A0-483E-88F4-E24C6DAF425E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D47F28CA-F6B6-4DCA-90B4-7589459D5990}"
+	ProjectSection(SolutionItems) = preProject
+		LoRa E32 Series Manual (v130.42047765).pdf = LoRa E32 Series Manual (v130.42047765).pdf
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
