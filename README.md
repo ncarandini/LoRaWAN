@@ -1,5 +1,5 @@
 # LoRaWAN
-A test project of LoRaWAN communication with Meadow
+A test project of LoRaWAN communication with [Meadow F7 Micro](https://www.wildernesslabs.co/developers)
 
 ![image](https://user-images.githubusercontent.com/139274/130270664-00792430-15d7-4794-87ea-1723d60b2438.png)
 
