@@ -4,6 +4,8 @@ using Meadow.Foundation;
 using Meadow.Foundation.Leds;
 using Meadow.Hardware;
 using System;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +14,8 @@ namespace TPCWare.LoRaWAN
     public class MeadowApp : App<F7Micro, MeadowApp>
     {
         private IUartLoRaWan uartLoRaWanDevice;
+
+        private StringBuilder msg;
 
         public MeadowApp()
         {
@@ -31,12 +35,31 @@ namespace TPCWare.LoRaWAN
             Console.WriteLine("Initialize LoRaWAN E32 868T20D device...");
             uartLoRaWanDevice = new E32_868T20D(Device, Device.SerialPortNames.Com1, Device.Pins.D10, Device.Pins.D11, Device.Pins.D14);
             uartLoRaWanDevice.DataReceived += DataReceived;
+
+            msg = new StringBuilder();
             Console.WriteLine("");
         }
 
         private void DataReceived(object sender, byte[] receivedData)
         {
             Console.WriteLine($"Data received: {BitConverter.ToString(receivedData)}");
+            msg.Append(Encoding.ASCII.GetString(receivedData, 0, receivedData.Length));
+            try
+            {
+                var resultString = Regex.Match(msg.ToString(), @"\d{5}T\d{2}\.\d{2}").Value;
+                if (resultString != null && resultString.Length > 0)
+                {
+                    Console.WriteLine($"Raw Message: {resultString}");
+                    Console.WriteLine($"Decoded Message: Message n. {resultString.Substring(0,5)}, temperature {resultString.Substring(6)} Celsius");
+                    Console.WriteLine();
+                    msg.Remove(0, resultString.Length);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                // Syntax error in the regular expression
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private async Task ManageLoRaWanCommunications()
@@ -59,22 +82,23 @@ namespace TPCWare.LoRaWAN
             Thread.Sleep(1000);
 
             // Set configuration parameters
-            Console.WriteLine("Set configuration parameters...");
-            await uartLoRaWanDevice.SetParameters(saveParamsOnPwrDown: false,
-                                                  moduleAddress: 0x000,
-                                                  dataFrame: UartLoRaWanDataFrame.EightNoneOne,
-                                                  baudRate: 9600,
-                                                  airDataRate: 2400,
-                                                  channelMHz: 868,
-                                                  transmissionType: UartLoRaWanTransmissionType.Trasparent,
-                                                  ioDriveMode: UartLoRaWanIoDriveMode.PushPullUp,
-                                                  wakeUpTimeMs: 250,
-                                                  forwardErrorCorrection: true,
-                                                  transmissionPowerDb: 20).ConfigureAwait(false);
 
-            Console.WriteLine("New device configuration:");
-            Console.WriteLine("");
-            ShowConfiguration();
+            //Console.WriteLine("Set configuration parameters...");
+            //await uartLoRaWanDevice.SetParameters(saveParamsOnPwrDown: false,
+            //                                      moduleAddress: 0x000,
+            //                                      dataFrame: UartLoRaWanDataFrame.EightNoneOne,
+            //                                      baudRate: 9600,
+            //                                      airDataRate: 2400,
+            //                                      channelMHz: 868,
+            //                                      transmissionType: UartLoRaWanTransmissionType.Trasparent,
+            //                                      ioDriveMode: UartLoRaWanIoDriveMode.PushPullUp,
+            //                                      wakeUpTimeMs: 250,
+            //                                      forwardErrorCorrection: true,
+            //                                      transmissionPowerDb: 20).ConfigureAwait(false);
+
+            //Console.WriteLine("New device configuration:");
+            //Console.WriteLine("");
+            //ShowConfiguration();
         }
 
         private void ShowConfiguration()
